@@ -1,103 +1,138 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Search, MapPin, Navigation } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
+const popularCities = ["New York", "Tokyo", "Paris", "Dubai", "Sydney", "Rio"];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [city, setCity] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const handleSearch = () => {
+    if (!city.trim()) {
+      setError("Please enter a city name");
+      return;
+    }
+    router.push(`/weather?city=${city.trim()}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4" 
+         style={{
+           background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 50%, #d8dee6 100%)'
+         }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md"
+      >
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+          <CardHeader className="text-center space-y-3">
+            <motion.div
+              initial={{ scale: 0.9, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+              className="mx-auto w-fit p-4 rounded-full"
+              style={{
+                background: 'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)'
+              }}
+            >
+              <Navigation className="w-8 h-8 text-white" />
+            </motion.div>
+            <CardTitle className="text-3xl font-bold bg-clip-text text-transparent" 
+                      style={{
+                        backgroundImage: 'linear-gradient(45deg, #29323c 0%, #485563 100%)'
+                      }}>
+              Weather Compass
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Discover weather patterns across the globe
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <div className="relative">
+              <Input
+                placeholder="Search for a city..."
+                value={city}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  setError("");
+                }}
+                onKeyDown={handleKeyDown}
+                className="pl-10 pr-4 py-5 text-base border-gray-300 focus-visible:ring-2 focus-visible:ring-amber-400"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            </div>
+
+            {error && (
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-rose-600 text-sm font-medium"
+              >
+                {error}
+              </motion.p>
+            )}
+
+            <Button 
+              onClick={handleSearch}
+              className="w-full py-5 text-base font-medium transition-all hover:shadow-md"
+              style={{
+                background: 'linear-gradient(45deg, #ff7e5f 0%, #feb47b 100%)',
+                border: 'none'
+              }}
+            >
+              Explore Weather
+            </Button>
+
+            <div className="relative flex items-center py-2">
+              <div className="flex-grow border-t border-gray-200"></div>
+              <span className="flex-shrink mx-2 text-gray-500 text-sm font-medium">Popular Cities</span>
+              <div className="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {popularCities.map((popularCity) => (
+                <motion.div
+                  key={popularCity}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/weather?city=${popularCity}`)}
+                    className="w-full text-sm font-medium hover:bg-gray-50 transition-colors border-gray-300"
+                  >
+                    {popularCity}
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-6 text-center text-sm"
+          style={{ color: '#485563' }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <p>Powered by OpenWeatherMap API</p>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

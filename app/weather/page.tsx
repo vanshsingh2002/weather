@@ -46,6 +46,7 @@ export default function WeatherPage() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState<WeatherTab>("current");
   const [unit, setUnit] = useState<"c" | "f">("c");
 

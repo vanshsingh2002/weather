@@ -36,7 +36,6 @@ interface WeatherResponse {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const city = searchParams.get("city");
-  const type = searchParams.get("type") || "current";
 
   if (!city) {
     return NextResponse.json({ error: "City is required" }, { status: 400 });
